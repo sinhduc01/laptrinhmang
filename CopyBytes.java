@@ -1,11 +1,11 @@
 import java.io.*;
 
-public class Copy {
+public class CopyBytes {
     public static void main(String[] args) throws IOException {
         File inputFile = new File("banner1.png");
         File outputFile = new File("banner2.png");
-        FileReader in = new FileReader(inputFile);
-        FileWriter out = new FileWriter(outputFile);
+        FileInputStream in = new FileInputStream(inputFile);
+        FileOutputStream out = new FileOutputStream(outputFile);
         int c;
         while ((c = in.read()) != -1)
             out.write(c);
