@@ -6,7 +6,6 @@ import java.util.*;
 
 public class Number {
     public static void main(String[] ags) throws IOException {
-        // String text = "";
         String text = new String(Files.readAllBytes(Paths.get("D:\\GitHUB\\laptrinhmang\\numarray\\numIn.txt")));
         sort(text);
     }
@@ -24,8 +23,15 @@ public class Number {
             i++;
         }
         Collections.sort(arrayList);
-        System.out.println("Tong la: " + tong);
-        System.out.println("Danh sach sap xep:" + arrayList);
+        try {
+            FileWriter myWriter = new FileWriter("D:\\GitHUB\\laptrinhmang\\numarray\\numOut.txt");
+            myWriter.write("Tong la: " + tong + "\n");
+            myWriter.write("Danh sach sap xep:" + arrayList);
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("Bi loi roi, khong ghi duoc huhu");
+            e.printStackTrace();
+        }
         return arrayList;
     }
 }
