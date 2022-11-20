@@ -1,34 +1,40 @@
 package src;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.Socket;
 
 public class ChatClient {
-    public final static String SERVER_IP = "192.168.1.16";
-    public final static int SERVER_PORT = 7;
+    public final static String SERVER_IP = "10";
+    public final static int SERVER_POST = 99;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         Socket socket = null;
+        String chat = null;
+        String chatoServer = null;
         try {
-            socket = new Socket(SERVER_IP, SERVER_PORT);
-            System.out.println("Connected:" + socket);
-            DataInputStream is = new DataInputStream(socket.getInputStream());
-            DataOutputStream os = new DataOutputStream(socket.getOutputStream());
-            String input;
-            // BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            // PrintWriter out = new PrintWriter(new
-            // BufferedWriter(newOutputStreamWriter(os)));
-            input = br.readLine();
-            os.writeUTF("Duc");
-            while (!input.equalsIgnoreCase("quit"))
-                ;
-            os.flush();
-            os.close();
-            is.close();
+            socket = new Socket(SERVER_IP, SERVER_POST);
+            System.out.println("Connected: " + socket);
+            InputStream is = socket.getInputStream();
+            OutputStream os = socket.getOutputStream();
+            while (true) {
+                System.out.print("Input from client: ");
+                BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+                // Lấy chuỗi ký tự nhập từ bàn phím
+                chat = inFromUser.readLine();
+                // Tạo OutputStream nối với Socket
+                DataOutputStream outToServer = new DataOutputStream(os);
+                outToServer.writeBytes(chat + '\n');
+                // BufferedReader inFromServer = new BufferedReader(new InputStreamReader(is));
+                // chatoServer = inFromServer.readLine();
+                // System.out.println("asdaa"+ chatoServer);
+                if (chat.equalsIgnoreCase("quit")) {
+                    outToServer.writeBytes("Quit!");
+                    break;
+                }
+
+            }
         } catch (IOException ie) {
-            System.out.println("Can't connect to server");
+            System.out.println("khong ket noi duoc");
         } finally {
             if (socket != null) {
                 socket.close();

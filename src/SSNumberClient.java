@@ -4,8 +4,8 @@ import java.io.*;
 import java.net.Socket;
 
 public class SSNumberClient {
-    public final static String SERVER_IP = "192.168.1.16";
-    public final static int SERVER_PORT = 7;
+    public final static String SERVER_IP = "10.10.10.59";
+    public final static int SERVER_PORT = 66;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

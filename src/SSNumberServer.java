@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.StringTokenizer;
 
 public class SSNumberServer {
-    public final static int SERVER_PORT = 7;
+    public final static int SERVER_PORT = 100;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         ServerSocket serverSocket = null;
@@ -23,10 +23,10 @@ public class SSNumberServer {
                     DataInputStream is = new DataInputStream(socket.getInputStream());
                     DataOutputStream os = new DataOutputStream(socket.getOutputStream());
                     String messageFromClient;
-                    do {
+                    while (true) {
                         messageFromClient = is.readUTF();
-                        StringBuilder input1 = new StringBuilder();
-                        input1.append(messageFromClient);
+                        // StringBuilder input1 = new StringBuilder();
+                        // input1.append(messageFromClient);
                         if (messageFromClient.equalsIgnoreCase("quit")) {
                             os.writeUTF("Quit!");
                             break;
@@ -46,7 +46,8 @@ public class SSNumberServer {
                         os.writeUTF("Tong la: " + tong + "\n" + "Danh sach da sap xep: "
                                 + arrayList.toString().replace("[", "").replace("]", ""));
                         os.flush();
-                    } while (false);
+                    }
+                    ;
                     os.close();
                     is.close();
                     socket.close();
