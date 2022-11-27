@@ -5,105 +5,153 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import java.io.*;
+import java.net.Socket;
+import java.util.StringTokenizer;
+
 public class DrawThread extends Thread {
+
     Socket socket;
 
     public DrawThread(Socket socket) {
         this.socket = socket;
     }
 
-    private static int Path(int x, int y) {
-        return (int) (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)));
-    }
-
-    public static void drawCircle(StringBuilder Client, int r_num) {
-        int width = r_num;
-        int length = (int) (width * 1.5);
-        int y = width;
-        while (y >= -width) {
-            int x = -length;
-            while (x <= length) {
-                if (Path(x, y) == r_num) {
-                    Client.append("*");
-                } else {
-                    Client.append(" ");
-                }
-                x += 1;
-            }
-            Client.append("\n");
-            y -= 2;
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
         }
-    }
-
-    public void drawRectangle(StringBuilder Client, int width, int height) {
-        for (int j = 1; j <= width; j++) {
-            Client.append("* ");
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
         }
-        Client.append("\n");
-        for (int i = 1; i <= height - 2; i++) {
-            Client.append("* ");
-            for (int j = 1; j <= width - 2; j++) {
-                Client.append("  ");
-            }
-            Client.append("*\n");
-        }
-        for (int j = 1; j <= width; j++) {
-            Client.append("* ");
-        }
-    }
-
-    public void drawSquare(StringBuilder Client, int width) {
-        for (int j = 1; j <= width; j++) {
-            Client.append("* ");
-        }
-        Client.append("\n");
-        for (int i = 1; i <= width - 2; i++) {
-            Client.append("* ");
-            for (int j = 1; j <= width - 2; j++) {
-                Client.append("  ");
-            }
-            Client.append("*\n");
-        }
-        for (int j = 1; j <= width; j++) {
-            Client.append("* ");
-        }
+        return true;
     }
 
     @Override
     public void run() {
         try {
-            DataInputStream is = new DataInputStream(socket.getInputStream());
-            DataOutputStream os = new DataOutputStream(socket.getOutputStream());
-            String message = is.readUTF();
-            System.out.println("Client: " + message);
+            OutputStream os = socket.getOutputStream();
+            InputStream is = socket.getInputStream();
+            // BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+            DataInputStream inputStream = new DataInputStream(is);
+            String line = "";
+            int i, j;
+            while (!Thread.currentThread().isInterrupted()) {
+                line = inputStream.readUTF();
+                System.out.println("From " + socket.getInetAddress().getHostAddress() + ">" + line);
+                StringTokenizer st = new StringTokenizer(line);
+                DataOutputStream outToClient = new DataOutputStream(os);
+                int dem = 0, a;
+                String hinh = "";
+                String sts = "";
+                while (st.hasMoreTokens()) {
+                    hinh += sts;
+                    sts = st.nextToken();
+                    // line = CHUNHAT 11 10
+                    // hinh = CHUNHAT
+                    if (isNumeric(sts)) {
+                        switch (hinh.trim()) {
+                            case "VUONG":
+                                vuong(Integer.parseInt(sts));
+                                break;
+                            case "CHUNHAT":
+                                String lengthHCN = line.substring(hinh.length() + 1);
+                                String[] abc = lengthHCN.split(" ");
+                                hcn(Integer.parseInt(abc[0]), Integer.parseInt(abc[1]));
+                                break;
+                            case "TRON":
+                                tron(Integer.parseInt(sts));
+                                break;
+                            default:
+                                // System.out.println("");
+                                break;
+                        }
+                    } else {
+                        System.out.println();
+                    }
 
-            StringTokenizer stringTokenizer = new StringTokenizer(message, " ");
-            ArrayList<String> arrayList = new ArrayList<>();
-            while (stringTokenizer.hasMoreTokens()) {
-                String token = stringTokenizer.nextToken();
-                arrayList.add(token);
+                    if (hinh.equalsIgnoreCase("CHUNHAT"))
+                        break;
+                }
+                if (line == null || line.equalsIgnoreCase("quit"))
+                    break;
+                // out.println("Response from K61 server:>>" + line);
+
             }
-
-            StringBuilder Client = new StringBuilder();
-            if (arrayList.get(0).equalsIgnoreCase("CHUNHAT")) {
-                drawRectangle(Client, Integer.parseInt(arrayList.get(1)), Integer.parseInt(arrayList.get(2)));
-            }
-
-            if (arrayList.get(0).equalsIgnoreCase("VUONG")) {
-                drawSquare(Client, Integer.parseInt(arrayList.get(1)));
-            }
-
-            if (arrayList.get(0).equalsIgnoreCase("TRON")) {
-                drawCircle(Client, Integer.parseInt(arrayList.get(1)));
-            }
-
-            System.out.println(Client);
-            os.writeUTF(String.valueOf(Client));
-            is.close();
-            os.close();
             socket.close();
         } catch (IOException e) {
             System.out.println("Connection lost from: " + socket.getInetAddress().getHostAddress());
         }
+    }
+
+    public void hcn(int a, int b) throws IOException {
+        OutputStream os = socket.getOutputStream();
+        DataOutputStream outToClient = new DataOutputStream(os);
+        int i, j;
+        for (i = 0; i < a; i++) {
+            for (j = 0; j < b; j++) {
+                if (i == 0 || i == a - 1 || j == 0 || j == b - 1) {
+                    outToClient.writeBytes("* ");
+                } else {
+                    outToClient.writeBytes("  ");
+                }
+            }
+            outToClient.writeBytes("\n");
+        }
+        outToClient.writeBytes("q");
+        outToClient.writeBytes("\n");
+        outToClient.flush();
+    }
+
+    public void vuong(int a) throws IOException {
+        OutputStream os = socket.getOutputStream();
+        DataOutputStream outToClient = new DataOutputStream(os);
+        int i, j;
+        for (i = 0; i < a; i++) {
+            for (j = 0; j < a; j++) {
+                if (i == 0 || i == a - 1 || j == 0 || j == a - 1) {
+                    outToClient.writeBytes("* ");
+                } else {
+                    outToClient.writeBytes("  ");
+                }
+            }
+            outToClient.writeBytes("\n");
+        }
+        outToClient.writeBytes("q");
+        outToClient.writeBytes("\n");
+        outToClient.flush();
+    }
+
+    private static int Path(int x, int y) {
+        return (int) (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)));
+    }
+
+    public void tron(int a) throws IOException {
+        OutputStream os = socket.getOutputStream();
+        DataOutputStream outToClient = new DataOutputStream(os);
+        int width = a;
+        int length = (int) (width * 1.5);
+        int y = width;
+        while (y >= -width) {
+            int x = -length;
+            while (x <= length) {
+                if (Path(x, y) == a) {
+                    outToClient.writeBytes("*");
+                } else {
+                    outToClient.writeBytes(" ");
+                }
+                x += 1;
+            }
+            outToClient.writeBytes("\n");
+            y -= 2;
+
+        }
+        outToClient.writeBytes("q");
+        outToClient.writeBytes("\n");
+        outToClient.flush();
+
     }
 }

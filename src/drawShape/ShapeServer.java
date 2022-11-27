@@ -1,12 +1,11 @@
 package src.drawShape;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class ThreadServer {
-
-    public final static int SERVER_PORT = 1000;//// 192.168.100.106 10.10.12.236
+public class ShapeServer {
+    public final static int SERVER_PORT = 999;//// 172.20.10.9
 
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = null;
@@ -19,7 +18,7 @@ public class ThreadServer {
                 try {
                     Socket socket = serverSocket.accept();
                     System.out.println("Client accepted: " + socket);
-                    DrawThread thread = new DrawThread(socket);
+                    ShapeThread thread = new ShapeThread(socket);
                     thread.start();
                 } catch (IOException e) {
                     System.err.println(" Connection Error: " + e);

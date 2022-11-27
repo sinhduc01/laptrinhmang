@@ -2,32 +2,43 @@ package src.drawShape;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class ServerClient {
-    public final static String SERVER_IP = "127.0.0.1";
-    public final static int SERVER_PORT = 9;
-    public static Scanner scanner = new Scanner(System.in);
+
+    public final static String SERVER_IP = "0.0.0.0";
+    public final static int SERVER_POST = 999;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Socket socket = null;
+        String chat = null;
+        String chatoServer = null;
         try {
-            socket = new Socket(SERVER_IP, SERVER_PORT);
+            socket = new Socket(SERVER_IP, SERVER_POST);
             System.out.println("Connected: " + socket);
-            DataInputStream is = new DataInputStream(socket.getInputStream());
-            DataOutputStream os = new DataOutputStream(socket.getOutputStream());
-            System.out.print("Input:");
-            String str = scanner.nextLine();
-            System.out.println(str);
-            os.writeUTF(str);
-            String toServer = is.readUTF();
-            System.out.println(toServer);
+            InputStream is = socket.getInputStream();
+            OutputStream os = socket.getOutputStream();
+            while (true) {
+                System.out.print("Input from client: ");
+                BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+                // Lấy chuỗi ký tự nhập từ bàn phím
+                chat = inFromUser.readLine();
+                // Tạo OutputStream nối với Socket
+                DataOutputStream outToServer = new DataOutputStream(os);
+                DataInputStream intoServer = new DataInputStream(is);
+                outToServer.writeBytes(chat + '\n');
+
+                // BufferedReader inFromServer = new BufferedReader(new InputStreamReader(is));
+                chatoServer = intoServer.readUTF();
+                System.out.println("asdaa" + chatoServer);
+
+            }
         } catch (IOException ie) {
-            System.out.println("Can't connect to server");
+            System.out.println("khong ket noi duoc");
         } finally {
             if (socket != null) {
                 socket.close();
             }
         }
     }
+
 }
