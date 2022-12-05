@@ -6,13 +6,11 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 public class EchoClient {
 
-    public final static String SERVER_IP = "10.10.11.27";
-    public final static int SERVER_PORT = 7; // Cổng mặc định của Echo Server
+    public final static String SERVER_IP = "0.0.0.0";// "10.10.11.27";
+    public final static int SERVER_PORT = 999; // Cổng mặc định của Echo Server
     public final static byte[] BUFFER = new byte[4096]; // Vùng đệm chứa dữ liệu cho gói tin nhận
 
     public static void main(String[] args) {
@@ -27,8 +25,7 @@ public class EchoClient {
                 InputStreamReader isr = new InputStreamReader(System.in); // Nhập
                 BufferedReader br = new BufferedReader(isr); // một chuỗi
                 String theString = br.readLine(); // từ bàn phím
-                Charset code = StandardCharsets.US_ASCII;
-                byte[] data = theString.getBytes(code); // Đổi chuỗi ra mảng bytes
+                byte[] data = theString.getBytes(); // Đổi chuỗi ra mảng bytes
 
                 // Tạo gói tin gởi
                 DatagramPacket dp = new DatagramPacket(data, data.length, server, SERVER_PORT);

@@ -5,7 +5,7 @@ import java.net.Socket;
 
 public class ServerClient {
 
-    public final static String SERVER_IP = "0.0.0.0";
+    public final static String SERVER_IP = "169.254.14.174";
     public final static int SERVER_POST = 999;
 
     public static void main(String[] args) throws IOException, InterruptedException {
